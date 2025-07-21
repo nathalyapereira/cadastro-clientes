@@ -16,6 +16,8 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +27,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
+    provideEnvironmentNgxMask(),
+    provideNgxMask(),
     // PrimeNG configuration
     importProvidersFrom(ToastModule),
     MessageService,

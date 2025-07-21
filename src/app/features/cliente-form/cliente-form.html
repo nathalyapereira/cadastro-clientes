@@ -1,0 +1,175 @@
+<p-toast
+  [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"
+/>
+<div class="flex justify-center p-8">
+  <form [formGroup]="clienteForm" (ngSubmit)="onSubmitClienteForm()">
+    <p-card
+      header="Cadastro de Cliente"
+      subheader="Faça já o seu cadastro!"
+      styleClass="mt-10"
+      [style]="{ width: '20rem' }"
+    >
+      <div class="flex justify-center text-center flex-col m-3">
+        <label
+          for="nome"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >Nome</label
+        >
+        <input
+          id="cliente-form-nome"
+          formControlName="nome"
+          pInputText
+          type="text"
+          placeholder="Digite o Nome"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('nome')?.touched && clienteForm.get('nome')?.invalid"
+        >
+          {{getError('Nome','o','nome')}}
+        </small>
+      </div>
+      <div class="flex justify-center text-center flex-col m-3">
+        <label
+          for="email"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >Email</label
+        >
+        <input
+          id="cliente-form-email"
+          formControlName="email"
+          pInputText
+          type="email"
+          placeholder="Digite o Email"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('email')?.touched && clienteForm.get('email')?.invalid"
+        >
+          {{getError('Email','o','email')}}
+        </small>
+      </div>
+      <div class="flex justify-center text-center flex-col m-3">
+        <label for="cpf" class="font-semibold !text-sm flex justify-start !py-1"
+          >CPF</label
+        >
+        <p-inputmask
+          id="cliente-form-cpf"
+          formControlName="cpf"
+          mask="999.999.999-99"
+          placeholder="999.999.999-99"
+          [style]="{ width: '100%' }"
+          cpfValidator
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('cpf')?.touched && clienteForm.get('cpf')?.invalid"
+        >
+          {{getError('CPF','o','cpf')}}
+        </small>
+      </div>
+      <div class="flex justify-center text-center flex-col m-3">
+        <label
+          for="data-nascimento"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >Data de Nascimento</label
+        >
+        <p-datepicker
+          inputId="cliente-form-data-nascimento"
+          formControlName="dataNascimento"
+          dateFormat="dd/mm/yy"
+          showIcon="true"
+          [maxDate]="maxDate"
+          [readonlyInput]="true"
+          placeholder="dd/mm/yy"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('dataNascimento')?.touched && clienteForm.get('dataNascimento')?.invalid"
+        >
+          {{getError('Data de nascimento','a','dataNascimento')}}
+        </small>
+      </div>
+      <div class="flex justify-center text-center flex-col m-3">
+        <label
+          for="contato"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >Contato</label
+        >
+        <input
+          formControlName="contato"
+          type="text"
+          [mask]="CEL_TEL"
+          placeholder="(XX) XXXXX-XXXX"
+          maxlength="15"
+          class="form-control"
+          ngxMask
+          class="p-inputtext p-component w-full border-none shadow-none focus:ring-0 focus:border-transparent"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('contato')?.touched && clienteForm.get('contato')?.invalid"
+        >
+          {{getError('Contato','o','contato')}}
+        </small>
+      </div>
+      <div class="flex justify-center flex-col m-3">
+        <label
+          for="pais"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >País</label
+        >
+        <p-select
+          formControlName="pais"
+          [options]="paisesData"
+          optionLabel="optionLabel"
+          optionValue="optionValue"
+          placeholder="Selecione o pais"
+          [filter]="true"
+          filterBy="optionLabel"
+          [showClear]="true"
+          class="w-full"
+          (onChange)="getEstados()"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('pais')?.touched && clienteForm.get('pais')?.invalid"
+        >
+          {{getError('País','o','pais')}}
+        </small>
+      </div>
+      <div class="flex justify-center flex-col m-3">
+        <label
+          for="estado"
+          class="font-semibold !text-sm flex justify-start !py-1"
+          >Estado</label
+        >
+        <p-select
+          formControlName="estado"
+          [options]="estadosData"
+          optionLabel="optionLabel"
+          optionValue="optionValue"
+          placeholder="Selecione o estado"
+          [filter]="true"
+          filterBy="optionLabel"
+          [showClear]="true"
+          class="w-full"
+          [loading]="true"
+          optionLabel="name"
+        />
+        <small
+          class="p-error !text-sm text-red-500 flex justify-start !py-1"
+          *ngIf="clienteForm.get('estado')?.touched && clienteForm.get('estado')?.invalid"
+        >
+          {{getError('Estado','o','estado')}}
+        </small>
+      </div>
+
+      <div class="card flex justify-center mt-3">
+        <button type="submit" pButton pRipple [disabled]="!clienteForm.valid">
+          Criar Conta
+        </button>
+      </div>
+    </p-card>
+  </form>
+</div>
