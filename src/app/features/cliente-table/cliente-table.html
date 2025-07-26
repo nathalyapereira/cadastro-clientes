@@ -1,1 +1,155 @@
-<p>cliente-table works!</p>
+<div>
+  <div class="w-full">
+    <!-- <app-cliente-dialog /> -->
+    <p-card styleClass="shadow-3 n-5 text-indigo-800 !w-full">
+      <ng-template #title
+        ><div class="flex items-center justify-between gap-1">Cliente</div>
+      </ng-template>
+
+      <p-table
+        #clienteTable
+        dataKey="id"
+        [value]="clientesData"
+        selectionMode="single"
+        [(selection)]="clienteSelecionado"
+        [metaKeySelection]="metaKey"
+        [paginator]="true"
+        [rowHover]="true"
+        [rows]="5"
+        [tableStyle]="{ 'width': '100%' }"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        [loading]="loading"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} produtos"
+        showGridlines
+        stripedRows
+        [scrollable]="true"
+        scrollHeight="400px"
+        [resizableColumns]="true"
+        columnResizeMode
+      >
+        <ng-template #caption
+          ><div
+            class="grid grid-cols-1 inline-grid md:grid-cols-3 sm:grid-cols-2 gap-4 my-4 items-end mt-2 mb-2"
+          >
+            <div class="p-col-12 md:p-col-3">
+              <label
+                for="nome"
+                class="font-semibold !text-sm flex justify-start !py-1"
+                >Nome</label
+              >
+              <input
+                type="text"
+                pInputText
+                [(ngModel)]="filtros.nome"
+                placeholder="Filtrar por nome"
+                (input)="filtrar()"
+                class="md:w-64 w-full"
+              />
+            </div>
+            <div class="p-col-12 md:p-col-3">
+              <label
+                for="estado"
+                class="font-semibold !text-sm flex justify-start !py-1"
+                >Estado</label
+              >
+              <input
+                type="text"
+                pInputText
+                [(ngModel)]="filtros.estado"
+                placeholder="Filtrar por estado"
+                (input)="filtrar()"
+                class="md:w-64 w-full"
+              />
+            </div>
+            <div class="p-col-12 md:p-col-4 md:mr-2">
+              <p-button
+                label="Adicionar"
+                icon="pi pi-plus"
+                (click)="novoCliente()"
+                severity="success"
+                pTooltip="Adicionar Cliente"
+                tooltipPosition="top"
+                (keydown.enter)="novoCliente()"
+                (keydown.space)="novoCliente()"
+                :tabindex="0"
+              />
+            </div>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th id="cliente-nome">
+              <div class="flex items-center gap-1">Nome</div>
+            </th>
+            <th id="cliente-email">
+              <div class="flex items-center gap-1">Email</div>
+            </th>
+            <th id="cliente-cpf">
+              <div class="flex items-center gap-1">CPF</div>
+            </th>
+            <th id="cliente-dataNascimento">
+              <div class="flex items-center gap-1">Data de Nascimento</div>
+            </th>
+            <th id="cliente-contato">
+              <div class="flex items-center gap-1">Contato</div>
+            </th>
+            <th id="cliente-pais">
+              <div class="flex items-center gap-1">País</div>
+            </th>
+            <th id="cliente-estado">
+              <div class="flex items-center gap-1">Estado</div>
+            </th>
+            <th
+              id="product-actions"
+              alignFrozen="right"
+              pFrozenColumn
+              [frozen]="true"
+            >
+              Ações
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-cliente>
+          <tr>
+            <td>{{ cliente?.nome }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.cpf }}</td>
+            <td>{{ cliente.dataNascimento }}</td>
+            <td>{{ cliente.contato }}</td>
+            <td>{{ cliente.pais }}</td>
+            <td>{{ cliente.estado }}</td>
+            <td alignFrozen="right" pFrozenColumn [frozen]="true">
+              <div class="flex items-center gap-1">
+                <p-button
+                  icon="pi pi-pencil"
+                  (click)="editar(cliente)"
+                  severity="warn"
+                  pTooltip="Editar"
+                  rounded
+                  class="p-button-rounded p-button-warning"
+                  tooltipPosition="top"
+                  (keydown.enter)="editar(cliente.id)"
+                  (keydown.space)="editar(cliente.id)"
+                  :tabindex="0"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  (click)="remover(cliente.id)"
+                  severity="danger"
+                  pTooltip="Remover"
+                  rounded
+                  class="p-button-rounded p-button-warning"
+                  tooltipPosition="top"
+                  (keydown.enter)="remover(cliente.id)"
+                  (keydown.space)="remover(cliente.id)"
+                  :tabindex="0"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

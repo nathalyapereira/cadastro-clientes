@@ -13,24 +13,28 @@ export class Localidade {
   // Injects
   private readonly http = inject(HttpClient);
 
-  private readonly BASE_URL = 'https://countriesnow.space/api/v0.1';
+  private readonly API_KEY =
+    'b081b3JRVFBZMDJjT3U5TjRBUVhOamM2d1JwaWszWEppalV4QU9mRQ==';
+  private readonly BASE_URL = 'https://api.countrystatecity.in/v1';
 
   private readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
+      'X-CSCAPI-KEY': this.API_KEY,
     }),
   };
 
-  getPaises(): Observable<LocalidadePaisesResponse> {
-    return this.http.get<LocalidadePaisesResponse>(
-      `${this.BASE_URL}/countries/positions`
+  getPaises(): Observable<LocalidadePaisesResponse[]> {
+    return this.http.get<LocalidadePaisesResponse[]>(
+      `${this.BASE_URL}/countries`,
+      this.httpOptions
     );
   }
 
-  getEstados(pais: string): Observable<LocalidadeEstadosResponse> {
-    return this.http.post<LocalidadeEstadosResponse>(
-      `${this.BASE_URL}/countries/states`,
-      { country: pais }
+  getEstados(pais: string): Observable<LocalidadeEstadosResponse[]> {
+    return this.http.get<LocalidadeEstadosResponse[]>(
+      `${this.BASE_URL}/countries/${pais}/states`,
+      this.httpOptions
     );
   }
 }

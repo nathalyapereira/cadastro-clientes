@@ -1,24 +1,17 @@
 export interface LocalidadePaisesResponse {
-  error: boolean;
-  msg: string;
-  data: Pais[];
+  id: number;
+  name: string;
+  iso2: string;
+  iso3: string;
+  phonecode: number;
+  capital: string;
+  currency: string;
+  native: string;
+  emoji: string;
 }
 
 export interface LocalidadeEstadosResponse {
-  error: boolean;
-  msg: string;
-  data: Pais;
-}
-
-export interface Pais {
+  id: number;
   name: string;
   iso2: string;
-  lat: number;
-  long: number;
-  states?: Estado[];
-}
-
-export interface Estado {
-  name: string;
-  state_code: string;
 }

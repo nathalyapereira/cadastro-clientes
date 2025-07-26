@@ -20,6 +20,10 @@ import { Localidade } from '../../core/services/localidade/localidade';
 import { Subject, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { CpfValidatorDirective } from '../../shared/validators/cpf-validator.directive';
+import {
+  LocalidadeEstadosResponse,
+  LocalidadePaisesResponse,
+} from '../../../models/localidade/LocalidadeResponse';
 
 @Component({
   selector: 'app-cliente-form',
@@ -56,8 +60,8 @@ export class ClienteForm implements OnInit, OnDestroy {
   CEL_TEL = '';
   maxDate: Date | undefined;
   telefoneControl = new FormControl('');
-  paisesData: { optionLabel: string; optionValue: string }[] = [];
-  estadosData: { optionLabel: string; optionValue: string }[] = [];
+  paisesData: LocalidadePaisesResponse[] = [];
+  estadosData: LocalidadeEstadosResponse[] = [];
   clienteForm = this.formBuilder.group({
     nome: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -93,7 +97,7 @@ export class ClienteForm implements OnInit, OnDestroy {
       life: 3000,
     });
     this.getPaises();
-    this.validarCpf();
+    this.loading = false;
   }
 
   getPaises(): void {
@@ -103,10 +107,7 @@ export class ClienteForm implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response !== null) {
-            this.paisesData = response.data.map((pais) => ({
-              optionLabel: pais.name,
-              optionValue: pais.name,
-            }));
+            this.paisesData = response;
           }
         },
         error: (err) => {
@@ -130,10 +131,7 @@ export class ClienteForm implements OnInit, OnDestroy {
         .subscribe({
           next: (response) => {
             if (response !== null) {
-              this.estadosData = response.data.states!.map((estado) => ({
-                optionLabel: estado.name,
-                optionValue: estado.name,
-              }));
+              this.estadosData = response;
             }
           },
           error: (err) => {
@@ -173,13 +171,15 @@ export class ClienteForm implements OnInit, OnDestroy {
     const pais = this.clienteForm.get('pais')?.value;
     const cpfControl = this.clienteForm.get('cpf');
 
+    console.log(pais);
+
     if (!cpfControl) return;
 
     const currentValidators = cpfControl.validator
       ? [cpfControl.validator]
       : [];
 
-    if (pais === 'Brazil') {
+    if (pais === 'BR') {
       const hasRequired = currentValidators.some(
         (v) => v === Validators.required
       );

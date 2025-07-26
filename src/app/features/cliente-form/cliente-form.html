@@ -122,14 +122,14 @@
         <p-select
           formControlName="pais"
           [options]="paisesData"
-          optionLabel="optionLabel"
-          optionValue="optionValue"
+          optionLabel="name"
+          optionValue="iso2"
           placeholder="Selecione o pais"
           [filter]="true"
-          filterBy="optionLabel"
+          filterBy="name"
           [showClear]="true"
           class="w-full"
-          (onChange)="getEstados()"
+          (onChange)="getEstados(); validarCpf()"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -147,15 +147,14 @@
         <p-select
           formControlName="estado"
           [options]="estadosData"
-          optionLabel="optionLabel"
-          optionValue="optionValue"
+          optionLabel="name"
+          optionValue="iso2"
           placeholder="Selecione o estado"
           [filter]="true"
-          filterBy="optionLabel"
+          filterBy="name"
           [showClear]="true"
           class="w-full"
-          [loading]="true"
-          optionLabel="name"
+          [loading]="loading"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
