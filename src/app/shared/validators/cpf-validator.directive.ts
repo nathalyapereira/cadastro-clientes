@@ -19,6 +19,9 @@ import {
 })
 export class CpfValidatorDirective implements Validator {
   validate(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
     const cpf = control.value?.replace(/\D/g, '');
     if (cpf.length) {
       let soma = 0;

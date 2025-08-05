@@ -1,22 +1,27 @@
+import {
+  LocalidadeEstadosResponse,
+  LocalidadePaisesResponse,
+} from '../localidade/LocalidadeResponse';
+
 export interface ClienteResponse {
   id: number;
   nome: string;
   email: string;
   cpf?: string;
-  dataNascimento: string;
+  dataNascimento: Date;
   contato: string;
-  pais: string;
-  estado: string;
+  pais: LocalidadePaisesResponse;
+  estado: LocalidadeEstadosResponse;
 }
 
 export interface ClienteFilter {
-  nome: string;
-  estado: string;
+  nome: string | null;
+  estado: string | null;
 }
 
 export interface Pagination {
   page: number;
-  pageSize: number;
+  size: number;
 }
 
 export interface ClienteListaStatus {

@@ -1,15 +1,32 @@
 <p-toast
   [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"
 />
-<div class="flex justify-center p-8">
-  <form [formGroup]="clienteForm" (ngSubmit)="onSubmitClienteForm()">
-    <p-card
-      header="Cadastro de Cliente"
-      subheader="Faça já o seu cadastro!"
-      styleClass="mt-10"
-      [style]="{ width: '20rem' }"
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [position]="'top'"
+  [style]="{ width: '25rem', height: 'auto' }"
+  [draggable]="true"
+  [resizable]="true"
+  [closable]="false"
+  class="cadastro-cliente-dialog"
+  appendTo="body"
+>
+  <ng-template #header>
+    <div class="card w-full m-0 p-0">
+      <h1 class="text-lg font-bold">
+        {{ idCliente ? 'Editar Cliente' : 'Adicionar Cliente' }}
+      </h1>
+      <p-divider class="w-full m-0 p-0" />
+    </div>
+  </ng-template>
+  <div class="flex justify-center">
+    <form
+      class="w-full"
+      [formGroup]="clienteForm"
+      (ngSubmit)="onSubmitClienteForm()"
     >
-      <div class="flex justify-center text-center flex-col m-3">
+      <div class="form-group flex justify-center text-center flex-col">
         <label
           for="nome"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -21,6 +38,7 @@
           pInputText
           type="text"
           placeholder="Digite o Nome"
+          class="!w-full"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -29,7 +47,7 @@
           {{getError('Nome','o','nome')}}
         </small>
       </div>
-      <div class="flex justify-center text-center flex-col m-3">
+      <div class="form-group flex justify-center text-center flex-col">
         <label
           for="email"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -49,7 +67,7 @@
           {{getError('Email','o','email')}}
         </small>
       </div>
-      <div class="flex justify-center text-center flex-col m-3">
+      <div class="form-group flex justify-center text-center flex-col">
         <label for="cpf" class="font-semibold !text-sm flex justify-start !py-1"
           >CPF</label
         >
@@ -68,7 +86,7 @@
           {{getError('CPF','o','cpf')}}
         </small>
       </div>
-      <div class="flex justify-center text-center flex-col m-3">
+      <div class="form-group flex justify-center text-center flex-col">
         <label
           for="data-nascimento"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -82,6 +100,7 @@
           [maxDate]="maxDate"
           [readonlyInput]="true"
           placeholder="dd/mm/yy"
+          (onSelect)="getdate()"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -90,7 +109,7 @@
           {{getError('Data de nascimento','a','dataNascimento')}}
         </small>
       </div>
-      <div class="flex justify-center text-center flex-col m-3">
+      <div class="form-group flex justify-center text-center flex-col">
         <label
           for="contato"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -113,7 +132,7 @@
           {{getError('Contato','o','contato')}}
         </small>
       </div>
-      <div class="flex justify-center flex-col m-3">
+      <div class="form-group flex justify-center flex-col">
         <label
           for="pais"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -121,15 +140,15 @@
         >
         <p-select
           formControlName="pais"
-          [options]="paisesData"
+          [options]="(paisesData$ | async) || []"
           optionLabel="name"
-          optionValue="iso2"
           placeholder="Selecione o pais"
           [filter]="true"
           filterBy="name"
           [showClear]="true"
-          class="w-full"
-          (onChange)="getEstados(); validarCpf()"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="38"
+          appendTo="body"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -138,7 +157,7 @@
           {{getError('País','o','pais')}}
         </small>
       </div>
-      <div class="flex justify-center flex-col m-3">
+      <div class="form-group flex justify-center flex-col">
         <label
           for="estado"
           class="font-semibold !text-sm flex justify-start !py-1"
@@ -146,15 +165,17 @@
         >
         <p-select
           formControlName="estado"
-          [options]="estadosData"
+          [options]="(estadosData$ | async) || []"
           optionLabel="name"
-          optionValue="iso2"
           placeholder="Selecione o estado"
           [filter]="true"
           filterBy="name"
           [showClear]="true"
           class="w-full"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="38"
           [loading]="loading"
+          appendTo="body"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -163,12 +184,26 @@
           {{getError('Estado','o','estado')}}
         </small>
       </div>
-
-      <div class="card flex justify-center mt-3">
-        <button type="submit" pButton pRipple [disabled]="!clienteForm.valid">
-          Criar Conta
-        </button>
+      <div class="h-24"></div>
+    </form>
+  </div>
+  <ng-template #footer>
+    <div class="card w-full flex flex-col">
+      <p-divider class="w-full" />
+      <div class="flex justify-end gap-2">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="closeModal()"
+        />
+        <p-button
+          label="Salvar"
+          (click)="visible = false"
+          type="submit"
+          pRipple
+          [disabled]="!clienteForm.valid"
+        />
       </div>
-    </p-card>
-  </form>
-</div>
+    </div>
+  </ng-template>
+</p-dialog>

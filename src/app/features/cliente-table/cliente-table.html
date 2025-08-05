@@ -1,6 +1,9 @@
 <div>
   <div class="w-full">
-    <!-- <app-cliente-dialog /> -->
+    <app-cliente-form
+      [(displayModal)]="displayModal"
+      [(idCliente)]="idCliente"
+    />
     <p-card styleClass="shadow-3 n-5 text-indigo-800 !w-full">
       <ng-template #title
         ><div class="flex items-center justify-between gap-1">Cliente</div>
@@ -10,6 +13,7 @@
         #clienteTable
         dataKey="id"
         [value]="clientesData"
+        [lazy]="true"
         selectionMode="single"
         [(selection)]="clienteSelecionado"
         [metaKeySelection]="metaKey"
@@ -18,7 +22,8 @@
         [rows]="5"
         [tableStyle]="{ 'width': '100%' }"
         [rowsPerPageOptions]="[5, 10, 20]"
-        [loading]="loading"
+        (onPage)="pageChange($event)"
+        [loading]="loading$ | async"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} produtos"
         showGridlines
@@ -66,12 +71,12 @@
               <p-button
                 label="Adicionar"
                 icon="pi pi-plus"
-                (click)="novoCliente()"
+                (click)="openModal()"
                 severity="success"
                 pTooltip="Adicionar Cliente"
                 tooltipPosition="top"
-                (keydown.enter)="novoCliente()"
-                (keydown.space)="novoCliente()"
+                (keydown.enter)="openModal()"
+                (keydown.space)="openModal()"
                 :tabindex="0"
               />
             </div>
@@ -115,22 +120,22 @@
             <td>{{ cliente?.nome }}</td>
             <td>{{ cliente.email }}</td>
             <td>{{ cliente.cpf }}</td>
-            <td>{{ cliente.dataNascimento }}</td>
+            <td>{{ cliente.dataNascimento | date: 'MM/dd/yyyy' }}</td>
             <td>{{ cliente.contato }}</td>
-            <td>{{ cliente.pais }}</td>
-            <td>{{ cliente.estado }}</td>
+            <td>{{ cliente.pais.name }}</td>
+            <td>{{ cliente.estado.name }}</td>
             <td alignFrozen="right" pFrozenColumn [frozen]="true">
               <div class="flex items-center gap-1">
                 <p-button
                   icon="pi pi-pencil"
-                  (click)="editar(cliente)"
+                  (click)="openModal(cliente.id)"
                   severity="warn"
                   pTooltip="Editar"
                   rounded
                   class="p-button-rounded p-button-warning"
                   tooltipPosition="top"
-                  (keydown.enter)="editar(cliente.id)"
-                  (keydown.space)="editar(cliente.id)"
+                  (keydown.enter)="openModal(cliente.id)"
+                  (keydown.space)="openModal(cliente.id)"
                   :tabindex="0"
                 />
                 <p-button

@@ -1,18 +1,23 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import {
   BehaviorSubject,
+  combineLatest,
   debounceTime,
+  delay,
   distinctUntilChanged,
-  switchMap,
+  map,
+  Observable,
+  of,
+  startWith,
   tap,
 } from 'rxjs';
 import {
   ClienteFilter,
-  ClienteListaStatus,
   ClienteResponse,
   Pagination,
 } from '../../../../models/cliente/ClienteResponse';
 import { ActivatedRoute, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -20,46 +25,39 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class Cliente {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly _clientes = new BehaviorSubject<ClienteResponse[]>([]);
+
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+
   private readonly _filtros = new BehaviorSubject<ClienteFilter>({
-    nome: '',
-    estado: '',
-  } as ClienteFilter);
+    nome: null,
+    estado: null,
+  });
   private readonly _paginacao = new BehaviorSubject<Pagination>({
     page: 0,
-    pageSize: 0,
-  } as Pagination);
+    size: 5,
+  });
   private readonly _totalRecords = new BehaviorSubject<number>(0);
+  private readonly _loading = new BehaviorSubject<boolean>(true);
 
-  public readonly clientes$ = this._clientes.asObservable();
+  private readonly _stateUpdates$ = combineLatest([
+    this._filtros.pipe(
+      distinctUntilChanged(
+        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+      )
+    ),
+    this._paginacao.pipe(
+      distinctUntilChanged(
+        (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+      )
+    ),
+  ]);
+
+  public readonly clientes$ = new BehaviorSubject<ClienteResponse[]>([]);
   public readonly filtros$ = this._filtros.asObservable();
   public readonly totalRecords$ = this._totalRecords.asObservable();
-  public readonly pagina$ = this._paginacao.asObservable();
-
-  constructor() {
-    this.aplicarFiltro();
-
-    this.activatedRoute.queryParams.subscribe((params) => {
-      const savedFiltros = this.loadFiltrosFromStorage?.();
-      const savedPaginacao = this.loadPaginacaoFromStorage?.();
-      const novoFiltro: ClienteFilter = {
-        nome: params['nome'] || savedFiltros?.nome || null,
-        estado: params['estado'] || savedFiltros?.estado || null,
-      };
-
-      const novaPaginacao: Pagination = {
-        page: params['page'] ? +params['page'] : savedPaginacao?.page || 0,
-        pageSize: params['pageSize']
-          ? +params['pageSize']
-          : savedPaginacao?.pageSize || 5,
-      };
-      this._filtros.next(novoFiltro);
-      this._paginacao.next(novaPaginacao);
-      this.saveFiltrosToStorage?.(novoFiltro);
-      this.savePaginacaoToStorage?.(novaPaginacao);
-      this.updateQueryParams(novoFiltro, novaPaginacao);
-    });
-  }
+  public readonly paginacao$ = this._paginacao.asObservable();
+  public readonly loading$ = this._loading.asObservable();
 
   private listaTotal: ClienteResponse[] = [
     {
@@ -67,42 +65,250 @@ export class Cliente {
       nome: 'Ana Souza',
       email: 'ana.souza@email.com',
       cpf: '123.456.789-00',
-      dataNascimento: '1990-05-12',
+      dataNascimento: new Date('1990-05-12'),
       contato: '(11) 91234-5678',
-      pais: 'Brazil',
-      estado: 'São Paulo',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 2021,
+        name: 'São Paulo',
+        iso2: 'SP',
+      },
     },
     {
       id: 2,
       nome: 'Carlos Mendes',
       email: 'carlos.mendes@email.com',
       cpf: '987.654.321-00',
-      dataNascimento: '1985-09-30',
+      dataNascimento: new Date('1985-09-30'),
       contato: '(21) 99876-5432',
-      pais: 'Brazil',
-      estado: 'Rio de Janeiro',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 1997,
+        name: 'Rio de Janeiro',
+        iso2: 'RJ',
+      },
+    },
+    {
+      id: 3,
+      nome: 'Beatriz Costa',
+      email: 'bia.costa@email.com',
+      cpf: '555.444.333-22',
+      dataNascimento: new Date('1992-03-15'),
+      contato: '(85) 98765-1234',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 2016,
+        name: 'Ceará',
+        iso2: 'CE',
+      },
     },
     {
       id: 4,
       nome: 'Lucas Silva',
       email: 'lucas.silva@email.com',
       cpf: '111.222.333-44',
-      dataNascimento: '2000-12-01',
+      dataNascimento: new Date('2000-12-01'),
       contato: '(31) 98765-4321',
-      pais: 'Brazil',
-      estado: 'Minas Gerais',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 1998,
+        name: 'Minas Gerais',
+        iso2: 'MG',
+      },
     },
     {
       id: 5,
       nome: 'Sofia Lima',
       email: 'sofia.lima@email.com',
       cpf: '555.666.777-88',
-      dataNascimento: '1997-07-17',
+      dataNascimento: new Date('1997-07-17'),
       contato: '(41) 91234-8765',
-      pais: 'Brazil',
-      estado: 'Paraná',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 2022,
+        name: 'Paraná',
+        iso2: 'PR',
+      },
+    },
+    {
+      id: 6,
+      nome: 'Gabriel Oliveira',
+      email: 'gabriel.oliver@email.com',
+      cpf: '999.888.777-66',
+      dataNascimento: new Date('1993-11-25'),
+      contato: '(11) 97654-3210',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 2021,
+        name: 'São Paulo',
+        iso2: 'SP',
+      },
+    },
+    {
+      id: 7,
+      nome: 'Mariana Santos',
+      email: 'mari.santos@email.com',
+      cpf: '333.222.111-00',
+      dataNascimento: new Date('1988-01-08'),
+      contato: '(21) 91122-3344',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 1997,
+        name: 'Rio de Janeiro',
+        iso2: 'RJ',
+      },
+    },
+    {
+      id: 8,
+      nome: 'Fernanda Martins',
+      email: 'fer.martins@email.com',
+      cpf: '777.666.555-44',
+      dataNascimento: new Date('1995-04-03'),
+      contato: '(31) 95566-7788',
+      pais: {
+        id: 31,
+        name: 'Brazil',
+        iso2: 'BR',
+        iso3: 'BRA',
+        phonecode: '55',
+        capital: 'Brasilia',
+        currency: 'BRL',
+        native: 'Brasil',
+        emoji: '🇧🇷',
+      },
+      estado: {
+        id: 1998,
+        name: 'Minas Gerais',
+        iso2: 'MG',
+      },
     },
   ];
+
+  constructor() {
+    this.activatedRoute.queryParams
+      .pipe(
+        map((params) => {
+          const savedFiltros = this.loadFiltrosFromStorage();
+          const savedPaginacao = this.loadPaginacaoFromStorage();
+
+          const filtros: ClienteFilter = {
+            nome: params['nome'] || savedFiltros?.nome || null,
+            estado: params['estado'] || savedFiltros?.estado || null,
+          };
+
+          const paginacao: Pagination = {
+            page: params['page'] ? +params['page'] : savedPaginacao?.page || 0,
+            size: params['size'] ? +params['size'] : savedPaginacao?.size || 5,
+          };
+          return { filtros, paginacao };
+        }),
+        startWith({
+          filtros: this.loadFiltrosFromStorage() || {
+            nome: null,
+            estado: null,
+          },
+          paginacao: this.loadPaginacaoFromStorage() || {
+            page: 0,
+            size: 5,
+          },
+        })
+      )
+      .subscribe(({ filtros, paginacao }) => {
+        setTimeout(() => {
+          this._filtros.next(filtros);
+          this._paginacao.next(paginacao);
+        }, 0);
+      });
+
+    this._stateUpdates$
+      .pipe(
+        debounceTime(100),
+        tap(() => this._loading.next(true)),
+        tap(([filtros, paginacao]) => {
+          this.updateQueryParams(filtros, paginacao);
+          this.saveFiltrosToStorage(filtros);
+          this.savePaginacaoToStorage(paginacao);
+        }),
+        map(([filtros, paginacao]) =>
+          this.aplicarFiltroLocal(filtros, paginacao)
+        )
+      )
+      .subscribe(([clientesFiltrados, totalRecords]) => {
+        this.clientes$.next(clientesFiltrados);
+        this._totalRecords.next(totalRecords);
+        this._loading.next(false);
+      });
+  }
 
   private updateQueryParams(
     filtros: ClienteFilter,
@@ -112,7 +318,7 @@ export class Cliente {
       relativeTo: this.activatedRoute,
       queryParams: {
         page: paginacao.page,
-        pageSize: paginacao.pageSize,
+        size: paginacao.size,
         nome: filtros.nome || null,
         estado: filtros.estado || null,
       },
@@ -122,79 +328,126 @@ export class Cliente {
   }
 
   private saveFiltrosToStorage(filtros: ClienteFilter): void {
-    try {
-      localStorage.setItem('clientesFiltros', JSON.stringify(filtros));
-      console.log('filtros saved to localStorage:', filtros);
-    } catch (e) {
-      console.error('Error saving Filtros to localStorage', e);
+    if (this.isBrowser) {
+      try {
+        localStorage.setItem('clientesFiltros', JSON.stringify(filtros));
+        console.log('Filtros salvos no localStorage:', filtros);
+      } catch (e) {
+        console.error('Erro ao salvar filtros no localStorage', e);
+      }
     }
   }
 
   private savePaginacaoToStorage(paginacao: Pagination): void {
-    try {
-      localStorage.setItem('clientesPaginacao', JSON.stringify(paginacao));
-      console.log('Paginacao saved to localStorage:', paginacao);
-    } catch (e) {
-      console.error('Error saving Paginacao to localStorage', e);
+    if (this.isBrowser) {
+      try {
+        localStorage.setItem('clientesPaginacao', JSON.stringify(paginacao));
+        console.log('Paginação salva no localStorage:', paginacao);
+      } catch (e) {
+        console.error('Erro ao salvar paginação no localStorage', e);
+      }
     }
   }
 
   private loadFiltrosFromStorage(): ClienteFilter | null {
-    try {
-      const savedFiltros = localStorage.getItem('clientesFiltros');
-      if (savedFiltros) {
-        return JSON.parse(savedFiltros);
+    if (this.isBrowser) {
+      try {
+        const savedFiltros = localStorage.getItem('clientesFiltros');
+        if (savedFiltros) {
+          return JSON.parse(savedFiltros);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar filtros do localStorage', e);
       }
-    } catch (e) {
-      console.error('Error loading Filtros from localStorage', e);
     }
     return null;
   }
 
   private loadPaginacaoFromStorage(): Pagination | null {
-    try {
-      const savedPaginacao = localStorage.getItem('clientesPaginacao');
-      if (savedPaginacao) {
-        return JSON.parse(savedPaginacao);
+    if (this.isBrowser) {
+      try {
+        const savedPaginacao = localStorage.getItem('clientesPaginacao');
+        if (savedPaginacao) {
+          return JSON.parse(savedPaginacao);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar paginação do localStorage', e);
       }
-    } catch (e) {
-      console.error('Error loading Paginacao from localStorage', e);
     }
     return null;
-  }
-
-  atualizarClientes(clientes: ClienteResponse[]) {
-    this._clientes.next(clientes);
   }
 
   atualizarPagina(paginacao: Pagination): void {
     this._paginacao.next(paginacao);
   }
 
-  atualizarFiltro(filtros: ClienteFilter) {
-    this._filtros.next(filtros);
-    this.aplicarFiltro();
+  atualizarFiltro(filtros: ClienteFilter): void {
+    const currentFiltros = this._filtros.getValue();
+    const newFiltros = { ...currentFiltros, ...filtros };
+    this._filtros.next(newFiltros);
+    const currentPaginacao = this._paginacao.getValue();
+    this._paginacao.next({ ...currentPaginacao, page: 0 });
   }
 
-  private aplicarFiltro(): void {
-    const filtro = this._filtros.value;
-    const clientesFiltrados = this.listaTotal.filter(
-      (cliente) =>
-        (!cliente.nome ||
-          cliente?.nome?.toLowerCase().includes(filtro.nome?.toLowerCase())) &&
-        (!cliente.estado ||
-          cliente?.estado?.toLowerCase().includes(filtro.estado?.toLowerCase()))
+  private aplicarFiltroLocal(
+    filtro: ClienteFilter,
+    paginacao: Pagination
+  ): [ClienteResponse[], number] {
+    console.log('Aplicando filtro e paginação:', filtro, paginacao);
+
+    let clientesResultados = [...this.listaTotal];
+
+    if (filtro.nome) {
+      const termoNome = filtro.nome.toLowerCase().trim();
+      clientesResultados = clientesResultados.filter((cliente) =>
+        cliente.nome?.toLowerCase().includes(termoNome)
+      );
+    }
+
+    if (filtro.estado) {
+      const termoEstado = filtro.estado.toLowerCase().trim();
+      clientesResultados = clientesResultados.filter((cliente) =>
+        cliente.estado.name?.toLowerCase().includes(termoEstado)
+      );
+    }
+
+    const totalFilteredRecords = clientesResultados.length;
+
+    const start = paginacao.page * paginacao.size;
+    const end = start + paginacao.size;
+    const clientesPaginados = clientesResultados.slice(start, end);
+
+    return [clientesPaginados, totalFilteredRecords];
+  }
+
+  obterClientePorId(id: number): Observable<ClienteResponse> {
+    const cliente = this.listaTotal.find((c) => c.id === id)!;
+    return of(cliente).pipe(delay(300));
+  }
+
+  salvarCliente(cliente: ClienteResponse): void {
+    if (cliente.id) {
+      const index = this.listaTotal.findIndex((c) => c.id === cliente.id);
+      if (index > -1) {
+        this.listaTotal[index] = cliente;
+      }
+    } else {
+      cliente.id = Math.max(...this.listaTotal.map((c) => c.id)) + 1;
+      this.listaTotal.push(cliente);
+    }
+
+    this.aplicarFiltroLocal(
+      this._filtros.getValue(),
+      this._paginacao.getValue()
     );
-    this._clientes.next(clientesFiltrados);
   }
 
-  //   remover(id: number) {
-  //   this.listaTotal = this.listaTotal.filter((c) => c.id !== id);
-  //   this.aplicarFiltro();
-  // }
-
-  remover(id: number) {
+  removerCliente(id: number): void {
     this.listaTotal = this.listaTotal.filter((c) => c.id !== id);
-    this.aplicarFiltro();
+
+    this.aplicarFiltroLocal(
+      this._filtros.getValue(),
+      this._paginacao.getValue()
+    );
   }
 }
