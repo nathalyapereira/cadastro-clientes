@@ -29,6 +29,7 @@ export class Cliente {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
+  private readonly _clientes = new BehaviorSubject<ClienteResponse[]>([]);
   private readonly _filtros = new BehaviorSubject<ClienteFilter>({
     nome: null,
     estado: null,
@@ -64,7 +65,7 @@ export class Cliente {
       id: 1,
       nome: 'Ana Souza',
       email: 'ana.souza@email.com',
-      cpf: '123.456.789-00',
+      cpf: '780.668.440-93',
       dataNascimento: new Date('1990-05-12'),
       contato: '(11) 91234-5678',
       pais: {
@@ -112,7 +113,7 @@ export class Cliente {
       id: 3,
       nome: 'Beatriz Costa',
       email: 'bia.costa@email.com',
-      cpf: '555.444.333-22',
+      cpf: '520.894.100-78',
       dataNascimento: new Date('1992-03-15'),
       contato: '(85) 98765-1234',
       pais: {
@@ -136,7 +137,7 @@ export class Cliente {
       id: 4,
       nome: 'Lucas Silva',
       email: 'lucas.silva@email.com',
-      cpf: '111.222.333-44',
+      cpf: '614.325.980-15',
       dataNascimento: new Date('2000-12-01'),
       contato: '(31) 98765-4321',
       pais: {
@@ -160,7 +161,7 @@ export class Cliente {
       id: 5,
       nome: 'Sofia Lima',
       email: 'sofia.lima@email.com',
-      cpf: '555.666.777-88',
+      cpf: '905.407.680-14',
       dataNascimento: new Date('1997-07-17'),
       contato: '(41) 91234-8765',
       pais: {
@@ -184,7 +185,7 @@ export class Cliente {
       id: 6,
       nome: 'Gabriel Oliveira',
       email: 'gabriel.oliver@email.com',
-      cpf: '999.888.777-66',
+      cpf: '670.633.020-51',
       dataNascimento: new Date('1993-11-25'),
       contato: '(11) 97654-3210',
       pais: {
@@ -208,7 +209,7 @@ export class Cliente {
       id: 7,
       nome: 'Mariana Santos',
       email: 'mari.santos@email.com',
-      cpf: '333.222.111-00',
+      cpf: '612.233.770-67',
       dataNascimento: new Date('1988-01-08'),
       contato: '(21) 91122-3344',
       pais: {
@@ -232,7 +233,7 @@ export class Cliente {
       id: 8,
       nome: 'Fernanda Martins',
       email: 'fer.martins@email.com',
-      cpf: '777.666.555-44',
+      cpf: '790.937.360-00',
       dataNascimento: new Date('1995-04-03'),
       contato: '(31) 95566-7788',
       pais: {
@@ -393,8 +394,6 @@ export class Cliente {
     filtro: ClienteFilter,
     paginacao: Pagination
   ): [ClienteResponse[], number] {
-    console.log('Aplicando filtro e paginação:', filtro, paginacao);
-
     let clientesResultados = [...this.listaTotal];
 
     if (filtro.nome) {
@@ -426,6 +425,8 @@ export class Cliente {
   }
 
   salvarCliente(cliente: ClienteResponse): void {
+    this._loading.next(true);
+
     if (cliente.id) {
       const index = this.listaTotal.findIndex((c) => c.id === cliente.id);
       if (index > -1) {
@@ -435,19 +436,29 @@ export class Cliente {
       cliente.id = Math.max(...this.listaTotal.map((c) => c.id)) + 1;
       this.listaTotal.push(cliente);
     }
-
-    this.aplicarFiltroLocal(
+    const [clientesPaginados, totalFilteredRecords] = this.aplicarFiltroLocal(
       this._filtros.getValue(),
       this._paginacao.getValue()
     );
+    this.clientes$.next(clientesPaginados);
+    this._totalRecords.next(totalFilteredRecords);
+
+    this._loading.next(false);
   }
 
   removerCliente(id: number): void {
-    this.listaTotal = this.listaTotal.filter((c) => c.id !== id);
+    this._loading.next(true);
 
-    this.aplicarFiltroLocal(
+    this.listaTotal = this.listaTotal.filter((c) => c.id !== id);
+    this.clientes$.next(this.listaTotal);
+    this._totalRecords.next(this.listaTotal.length);
+
+    const [clientesPaginados, totalFilteredRecords] = this.aplicarFiltroLocal(
       this._filtros.getValue(),
       this._paginacao.getValue()
     );
+    this.clientes$.next(clientesPaginados);
+    this._totalRecords.next(totalFilteredRecords);
+    this._loading.next(false);
   }
 }

@@ -160,8 +160,8 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
             estado: response.estado ?? ({} as LocalidadeEstadosResponse),
           };
           this.clienteForm.patchValue(cliente);
-
-          console.log('Cliente obtido:', cliente);
+          this.clienteForm.markAllAsTouched();
+          this.clienteForm.updateValueAndValidity();
         },
         error: (err) => {
           this.messageService.add({
@@ -199,8 +199,6 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
         .getEstados(paisSelecionado)
         .pipe(
           map((data) => {
-            console.log('Estados obtidos:', data);
-
             return data ?? [];
           }),
           catchError((err) => {
@@ -294,6 +292,7 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
       life: 3000,
     });
     console.log('onSubmitClienteForm');
+    this.closeModal();
   }
 
   closeModal(): void {
@@ -301,14 +300,6 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
     this.displayModalChange.emit(this.visible);
     this.idClienteChange.emit(undefined);
     this.clienteForm.reset();
-  }
-
-  getdate() {
-    const dataNascimento = this.clienteForm.get('dataNascimento')?.value;
-    console.log('Data de Nascimento:', dataNascimento);
-    const dataNascimentoConvertida = new Date(dataNascimento ?? '');
-
-    console.log('Data de Nascimento Covertida:', dataNascimentoConvertida);
   }
 
   //Lifecycle

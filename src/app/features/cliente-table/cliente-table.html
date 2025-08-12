@@ -4,6 +4,15 @@
       [(displayModal)]="displayModal"
       [(idCliente)]="idCliente"
     />
+    <app-confirmation-modal
+      [(displayModal)]="displayConfirmationModal"
+      title="Deletar Item"
+      message="Tem certeza que deseja deletar este item? Esta ação não pode ser desfeita."
+      icon="pi-exclamation-triangle"
+      (confirm)="onConfirmDelete()"
+      (cancel)="onCancelDelete()"
+    >
+    </app-confirmation-modal>
     <p-card styleClass="shadow-3 n-5 text-indigo-800 !w-full">
       <ng-template #title
         ><div class="flex items-center justify-between gap-1">Cliente</div>
@@ -20,6 +29,8 @@
         [paginator]="true"
         [rowHover]="true"
         [rows]="5"
+        [first]="first"
+        [totalRecords]="totalRecords"
         [tableStyle]="{ 'width': '100%' }"
         [rowsPerPageOptions]="[5, 10, 20]"
         (onPage)="pageChange($event)"
@@ -121,7 +132,7 @@
             <td>{{ cliente.email }}</td>
             <td>{{ cliente.cpf }}</td>
             <td>{{ cliente.dataNascimento | date: 'MM/dd/yyyy' }}</td>
-            <td>{{ cliente.contato }}</td>
+            <td>{{ cliente.contato | telefone }}</td>
             <td>{{ cliente.pais.name }}</td>
             <td>{{ cliente.estado.name }}</td>
             <td alignFrozen="right" pFrozenColumn [frozen]="true">

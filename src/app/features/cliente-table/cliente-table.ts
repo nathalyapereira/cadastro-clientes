@@ -2,7 +2,6 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   ClienteFilter,
   ClienteResponse,
-  Pagination,
 } from '../../../models/cliente/ClienteResponse';
 import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
@@ -15,6 +14,8 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClienteForm } from '../cliente-form/cliente-form';
+import { ConfirmationModal } from '../confirmation-modal/confirmation-modal';
+import { TelefonePipe } from '../../shared/pipes/TelefonePipe.pipe';
 
 @Component({
   selector: 'app-cliente-table',
@@ -23,19 +24,17 @@ import { ClienteForm } from '../cliente-form/cliente-form';
       ReactiveFormsModule,
       FormsModule,
       CommonModule,
-      // NgxMaskDirective,
       // PrimeNG
       CardModule,
       InputTextModule,
       TableModule,
       ButtonModule,
       ToastModule,
-      // RippleModule,
-      // InputMaskModule,
-      // DatePickerModule,
-      // SelectModule,
       // Component
       ClienteForm,
+      ConfirmationModal,
+      // Pipes
+      TelefonePipe,
     ],
   ],
   templateUrl: './cliente-table.html',
@@ -51,13 +50,14 @@ export class ClienteTable implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   clientesData!: ClienteResponse[];
   filtros = {} as ClienteFilter;
-  paginacao = {} as Pagination;
+  totalRecords: number = 0;
   first = 0;
   rows = 5;
   public clienteSelecionado = {} as ClienteResponse;
   public metaKey = true;
   loading$: Observable<boolean>;
   displayModal = false;
+  displayConfirmationModal = false;
   idCliente: number | undefined;
 
   constructor() {
@@ -76,7 +76,13 @@ export class ClienteTable implements OnInit, OnDestroy {
     this.clienteService.paginacao$
       .pipe(takeUntil(this.destroy$))
       .subscribe((p) => {
-        this.paginacao = p;
+        this.first = p.page * p.size;
+        this.rows = p.size;
+      });
+    this.clienteService.totalRecords$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((t) => {
+        this.totalRecords = t;
       });
   }
 
@@ -85,7 +91,17 @@ export class ClienteTable implements OnInit, OnDestroy {
   }
 
   remover(id: number) {
-    this.clienteService.removerCliente(id);
+    this.idCliente = id;
+    this.displayConfirmationModal = true;
+  }
+
+  onConfirmDelete() {
+    console.log('Item deletado com sucesso!');
+    this.clienteService.removerCliente(this.idCliente!);
+  }
+
+  onCancelDelete() {
+    console.log('Operação de delete cancelada.');
   }
 
   openModal(id?: number) {
@@ -101,9 +117,13 @@ export class ClienteTable implements OnInit, OnDestroy {
     this.displayModal = true;
   }
 
-  pageChange(event: any) {
-    this.first = event.first;
-    this.rows = event.rows;
+  pageChange({ first, rows }: { first: number; rows: number }) {
+    this.first = first;
+    this.rows = rows;
+    this.clienteService.atualizarPagina({
+      page: first === 0 ? 0 : first / rows,
+      size: rows,
+    });
   }
 
   //Lifecycle

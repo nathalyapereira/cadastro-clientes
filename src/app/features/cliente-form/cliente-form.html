@@ -100,7 +100,7 @@
           [maxDate]="maxDate"
           [readonlyInput]="true"
           placeholder="dd/mm/yy"
-          (onSelect)="getdate()"
+          appendTo="body"
         />
         <small
           class="p-error !text-sm text-red-500 flex justify-start !py-1"
@@ -194,15 +194,17 @@
         <p-button
           label="Cancelar"
           severity="secondary"
-          (click)="closeModal()"
-        />
+          (onClick)="closeModal()"
+          styleClass="p-button-text"
+        ></p-button>
         <p-button
           label="Salvar"
-          (click)="visible = false"
+          (onClick)="onSubmitClienteForm()"
           type="submit"
           pRipple
           [disabled]="!clienteForm.valid"
-        />
+          styleClass="p-button-text"
+        ></p-button>
       </div>
     </div>
   </ng-template>

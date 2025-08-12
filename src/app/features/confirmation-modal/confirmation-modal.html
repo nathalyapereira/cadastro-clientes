@@ -1,0 +1,27 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '400px' }">
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <h3 class="text-lg font-bold m-0">{{ titulo }}</h3>
+      <i [class]="`pi ${icon} mr-2`" style="font-size: 1.5rem"></i>
+    </div>
+  </ng-template>
+
+  <div>
+    <p class="m-0">{{ mensagem }}</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      (onClick)="onCancel()"
+      styleClass="p-button-text"
+    ></p-button>
+    <p-button
+      label="Confirmar"
+      icon="pi pi-check"
+      (onClick)="onConfirm()"
+      styleClass="p-button-danger"
+    ></p-button>
+  </ng-template>
+</p-dialog>
