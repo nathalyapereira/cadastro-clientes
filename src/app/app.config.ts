@@ -10,7 +10,11 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
@@ -18,6 +22,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { provideNgxMask } from 'ngx-mask';
+import { apiInterceptorInterceptor } from './shared/interceptor/api-interceptor-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +31,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([apiInterceptorInterceptor])
+    ),
     provideEnvironmentNgxMask(),
     provideNgxMask(),
     // PrimeNG configuration

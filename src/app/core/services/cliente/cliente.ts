@@ -23,13 +23,13 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class Cliente {
+  //Injects
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  private readonly _clientes = new BehaviorSubject<ClienteResponse[]>([]);
   private readonly _filtros = new BehaviorSubject<ClienteFilter>({
     nome: null,
     estado: null,
@@ -332,7 +332,6 @@ export class Cliente {
     if (this.isBrowser) {
       try {
         localStorage.setItem('clientesFiltros', JSON.stringify(filtros));
-        console.log('Filtros salvos no localStorage:', filtros);
       } catch (e) {
         console.error('Erro ao salvar filtros no localStorage', e);
       }
@@ -343,7 +342,6 @@ export class Cliente {
     if (this.isBrowser) {
       try {
         localStorage.setItem('clientesPaginacao', JSON.stringify(paginacao));
-        console.log('Paginação salva no localStorage:', paginacao);
       } catch (e) {
         console.error('Erro ao salvar paginação no localStorage', e);
       }

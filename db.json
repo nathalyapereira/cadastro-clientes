@@ -1,0 +1,196 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nome": "Ana Souza",
+      "email": "ana.souza@email.com",
+      "cpf": "780.668.440-93",
+      "dataNascimento": "1990-05-12",
+      "contato": "(11) 91234-5678",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 2021,
+        "name": "São Paulo",
+        "iso2": "SP"
+      }
+    },
+    {
+      "id": 2,
+      "nome": "Carlos Mendes",
+      "email": "carlos.mendes@email.com",
+      "cpf": "987.654.321-00",
+      "dataNascimento": "1985-09-30",
+      "contato": "(21) 99876-5432",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 1997,
+        "name": "Rio de Janeiro",
+        "iso2": "RJ"
+      }
+    },
+    {
+      "id": 3,
+      "nome": "Beatriz Costa",
+      "email": "bia.costa@email.com",
+      "cpf": "520.894.100-78",
+      "dataNascimento": "1992-03-15",
+      "contato": "(85) 98765-1234",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 2016,
+        "name": "Ceará",
+        "iso2": "CE"
+      }
+    },
+    {
+      "id": 4,
+      "nome": "Lucas Silva",
+      "email": "lucas.silva@email.com",
+      "cpf": "614.325.980-15",
+      "dataNascimento": "2000-12-01",
+      "contato": "(31) 98765-4321",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 1998,
+        "name": "Minas Gerais",
+        "iso2": "MG"
+      }
+    },
+    {
+      "id": 5,
+      "nome": "Sofia Lima",
+      "email": "sofia.lima@email.com",
+      "cpf": "905.407.680-14",
+      "dataNascimento": "1997-07-17",
+      "contato": "(41) 91234-8765",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 2022,
+        "name": "Paraná",
+        "iso2": "PR"
+      }
+    },
+    {
+      "id": 6,
+      "nome": "Gabriel Oliveira",
+      "email": "gabriel.oliver@email.com",
+      "cpf": "670.633.020-51",
+      "dataNascimento": "1993-11-25",
+      "contato": "(11) 97654-3210",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 2021,
+        "name": "São Paulo",
+        "iso2": "SP"
+      }
+    },
+    {
+      "id": 7,
+      "nome": "Mariana Santos",
+      "email": "mari.santos@email.com",
+      "cpf": "612.233.770-67",
+      "dataNascimento": "1988-01-08",
+      "contato": "(21) 91122-3344",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 1997,
+        "name": "Rio de Janeiro",
+        "iso2": "RJ"
+      }
+    },
+    {
+      "id": 8,
+      "nome": "Fernanda Martins",
+      "email": "fer.martins@email.com",
+      "cpf": "790.937.360-00",
+      "dataNascimento": "1995-04-03",
+      "contato": "(31) 95566-7788",
+      "pais": {
+        "id": 31,
+        "name": "Brazil",
+        "iso2": "BR",
+        "iso3": "BRA",
+        "phonecode": "55",
+        "capital": "Brasilia",
+        "currency": "BRL",
+        "native": "Brasil",
+        "emoji": "🇧🇷"
+      },
+      "estado": {
+        "id": 1998,
+        "name": "Minas Gerais",
+        "iso2": "MG"
+      }
+    }
+  ]
+}

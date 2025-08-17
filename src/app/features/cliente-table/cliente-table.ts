@@ -96,20 +96,16 @@ export class ClienteTable implements OnInit, OnDestroy {
   }
 
   onConfirmDelete() {
-    console.log('Item deletado com sucesso!');
     this.clienteService.removerCliente(this.idCliente!);
   }
 
-  onCancelDelete() {
-    console.log('Operação de delete cancelada.');
-  }
+  onCancelDelete() {}
 
   openModal(id?: number) {
     const editar = Boolean(id);
 
     if (editar) {
       this.idCliente = id;
-      console.log('Editando cliente com ID:', this.idCliente);
     } else {
       this.idCliente = undefined;
     }

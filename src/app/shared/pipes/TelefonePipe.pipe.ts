@@ -17,7 +17,6 @@ export class TelefonePipe implements PipeTransform {
 
     const ddd = telefone.substring(0, 2);
     const numero = telefone.substring(2);
-    console.log('DDD:', ddd, 'Número:', numero);
     if (numero.length === 9) {
       return `(${ddd}) ${numero.substring(0, 1)} ${numero.substring(
         1,

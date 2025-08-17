@@ -192,7 +192,6 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
   }
 
   getEstados(): void {
-    console.log('getEstados');
     const paisSelecionado = this.clienteForm.get('pais')?.value?.iso2 ?? '';
     if (paisSelecionado.length) {
       this.estadosData$ = this.localidadeService
@@ -234,8 +233,6 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
   validarCpf() {
     const pais = this.clienteForm.get('pais')?.value?.iso2 ?? '';
     const cpfControl = this.clienteForm.get('cpf');
-
-    console.log(pais);
 
     if (!cpfControl || !pais?.length) return;
 
@@ -291,7 +288,6 @@ export class ClienteForm implements OnInit, OnChanges, OnDestroy {
       detail: 'Cliente salvo com sucesso!',
       life: 3000,
     });
-    console.log('onSubmitClienteForm');
     this.closeModal();
   }
 
