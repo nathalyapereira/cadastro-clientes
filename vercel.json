@@ -4,11 +4,7 @@
     {
       "src": "dist/cadastro-clientes/server/server.mjs",
       "use": "@vercel/node"
-    },
-    { "src": "dist/cadastro-clientes/browser/**", "use": "@vercel/static" }
+    }
   ],
-  "routes": [
-    { "src": "/", "dest": "/" },
-    { "src": "/cliente-table", "dest": "/" }
-  ]
+  "routes": [{ "src": "/", "dest": "/" }]
 }
