@@ -1,5 +1,13 @@
 {
   "version": 2,
-  "builds": [{ "src": "dist/cadastro-clientes/**", "use": "@vercel/static" }],
-  "routes": [{ "src": "/(.*)", "dest": "index.html" }]
+  "builds": [
+    {
+      "src": "dist/cadastro-clientes/server/server.mjs",
+      "use": "@vercel/node"
+    },
+    { "src": "dist/cadastro-clientes/browser/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "dist/cadastro-clientes/server/server.mjs" }
+  ]
 }
