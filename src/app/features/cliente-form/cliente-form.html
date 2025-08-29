@@ -200,7 +200,7 @@
         <p-button
           label="Salvar"
           type="submit"
-          pButton
+          (onClick)="onSubmitClienteForm()"
           pRipple
           [disabled]="!clienteForm.valid"
           styleClass="p-button-text"
